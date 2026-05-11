@@ -692,18 +692,18 @@ PYEOF
   echo -e "${BOLD}═══════════════════════════════════════════════════════════════════════════${NC}"
 
   # Per-chapter scores for latest cycle
-  local latest
-  latest=$(ls -t "$SCORES_DIR"/cycle_*_eval.json 2>/dev/null | head -1)
+  local latest=""
+  latest=$(ls -t "$SCORES_DIR"/cycle_*_eval.json 2>/dev/null | head -1 || true)
   if [[ -n "$latest" ]]; then
     echo ""
     echo -e "${BOLD} Per-chapter scores (latest evaluation):${NC}"
     echo -e "───────────────────────────────────────────────────────────────────────────"
 
     # Find latest comparison file for verdict annotations
-    local latest_cmp
-    latest_cmp=$(ls -t "$SCORES_DIR"/cycle_*_compare.json 2>/dev/null | head -1)
+    local latest_cmp=""
+    latest_cmp=$(ls -t "$SCORES_DIR"/cycle_*_compare.json 2>/dev/null | head -1 || true)
 
-    python3 << PYEOF - "$latest" "${latest_cmp:-}"
+    python3 - "$latest" "${latest_cmp:-}" <<'PYEOF'
 import json, sys
 
 d = json.load(open(sys.argv[1]))
