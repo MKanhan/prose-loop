@@ -14,40 +14,33 @@ ADRs, design rationale, deferred backlog, known issues, handoff. Sprint history 
 | 0006 | (Spec 01, planned) Auditoria de PII como gate antes de `git init` | Confiar em revisão visual | Risco de leak não vale 1h de scan determinístico |
 | 0007 | `specs/` vivem em `.local/specs/`, não tracked | Publicar specs sanitizadas no repo | Specs eram fonte de 18/23 hits PII e exigiriam edição contínua; mover elimina superfície sem perder a metodologia spec-driven internamente. Decidido durante implementação da Spec 01 |
 
-## Handoff — 2026-05-11 (Specs 01-05 done; ready for Spec 06)
+## Handoff — 2026-05-11 (v1.2.0 released; Specs 01-06 complete)
 
 ### Estado atual
-**Status: active**. Repo git, branch `main`, 8 commits, working tree clean, ~20 arquivos tracked.
+**Status: released**. Repo público em github.com/MKanhan/prose-loop. Tag `v1.2.0` propagada. CI verde (~27s no primeiro run). Release publicada com notes do CHANGELOG. <!-- audit:allow operator portfolio site -->
 
-- Specs 01-05 implementadas.
-- README.md, CHANGELOG.md, examples/sample-run/ publicados (Spec 05).
-- Bug latente encontrado e corrigido durante Spec 05: `print_score_table` abortava silenciosamente sob `set -eo pipefail` quando `cycle_*_compare.json` ainda não existia (commit a06154d). CHANGELOG documenta. <!-- audit:allow operator portfolio site --> URL canônica kanhan.com.br + substack.kanhan.com.
-- audit-scan.sh continua mode 100644 (sandbox bloqueia chmod +x); invocação `bash scripts/audit-scan.sh`.
+- 20+ arquivos tracked, ~13 commits.
+- Site entry publicada em kanhan.com.br/en/build/ (posição 08, cover "Geometric Theatricality" by Cayetano Gros — crédito no frontmatter). Per-project page em kanhan.com.br/en/prose-loop/. <!-- audit:allow operator portfolio site -->
+- Shellcheck clean: 1 SC2155 fix, 2 SC2012 inline disables (ls -t sorts by mtime intencional), 1 SC2034 dead-code removido (`prev_composite` virou redundante após o comparator pass).
+- Bug latente fixado durante Spec 05: `print_score_table` abortava silenciosamente sob `set -eo pipefail` quando não havia compare JSONs (commit a06154d).
 
-### Verificação executada
-- Self-test scanner: passa.
-- Audit scan: exit 0.
-- Dry-run sobre fixture mini-book (Sonnet): composite 6.13, score table completa com per-chapter rows + markers ◄.
-- examples/sample-run/cycle_0_eval.json e score-table.txt criados a partir desse run.
-- README cold-read: responde what / how / cost / privacy / license em <2min.
+### Sprint Specs 01-06 — resumo
+- **01**: PII audit + redactions; `scripts/audit-scan.sh`; specs/ → .local/ (ADR 0007).
+- **02**: `git init`, MIT, `.gitignore`, primeiro commit.
+- **03**: Rubric externalization. EN keys default; `--rubric` flag.
+- **04**: `--chapter`, `--priority-count`.
+- **05**: README, CHANGELOG, examples/sample-run/. Cleanup do PT-BR rubric (era scope creep).
+- **06**: shellcheck, CI mínima, tag v1.2.0, push público, release, entry no site.
 
-### Próxima ação
-**Spec 06 — CI & publication**. Última sprint.
-- Shellcheck sobre prose_loop.sh + scripts/audit-scan.sh; aplicar fixes ou disable-comments justificados.
-- `.github/workflows/ci.yml` mínima: checkout + install shellcheck + `shellcheck *.sh` + `PROSE_LOOP_CI=1` smoke test (precisa adicionar early-exit em prose_loop.sh).
-- Re-audit final sobre repo completo.
-- Renomear `## [Unreleased]` no CHANGELOG para `## [1.2.0] - 2026-05-DD`.
-- Criar repo público em github.com/<handle>/prose-loop, push main, push tag v1.2.0.
-- Adicionar entry em kanhan.com.br/en/build/. <!-- audit:allow operator portfolio site -->
+### Custo total da sprint
+<$3 em chamadas Anthropic (dry-runs Sonnet durante verificação Spec 03, 04, 05).
+
+### Follow-ups (fora do escopo deste repo)
+- Atualizar `portfolio-state.md` workspace-level: prose-loop muda de "paused" para "released".
+- (Opcional) Branch protection no repo público, Dependabot, asciinema cast, multi-OS CI matrix.
 
 ### Ordem de execução das specs
-01 ✅ → 02 ✅ → 03 ✅ → 04 ✅ → 05 ✅ → **06 (final)**.
-
-### Materialidade pra portfolio-state.md
-Status do projeto mudou de `paused` para `active`. Operador pode querer atualizar `portfolio-state.md` quando o ciclo encerrar (Spec 06 done + repo público).
-
-### Custo estimado da sprint
-Não há gasto Anthropic significativo nas specs 01, 02. Specs 03, 04 envolvem testes via dry-run em fixtures sintéticos (~$0.50-$2). Spec 05 precisa de pelo menos um run completo em mini-book para gerar example output (~$1). Spec 06 sem gasto. Total esperado: <$10.
+01 ✅ → 02 ✅ → 03 ✅ → 04 ✅ → 05 ✅ → 06 ✅ — sprint completa.
 
 ## Known issues / Tech debt
 
