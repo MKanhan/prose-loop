@@ -1,0 +1,105 @@
+{
+  "cycle": 0,
+  "chapters": [
+    {
+      "file": "cap_01.md",
+      "title": "Chapter 1 — The Geometry Behind a Fold",
+      "word_count": 620,
+      "is_divider": false,
+      "scores": {
+        "relevance_currency": 5.5,
+        "originality": 5.0,
+        "prose_quality": 6.5,
+        "balance": 6.0,
+        "accessibility": 7.5,
+        "commercial_value": 5.0,
+        "accuracy_references": 6.0
+      },
+      "composite": 6.01,
+      "critique": "The engineering applications paragraph (airbags, stents, solar panels) reads as a checklist of familiar talking points rather than an illuminating example — pick one application and trace the geometry into it specifically. The 'What comes next' section is pure structural signposting with no narrative pull; it describes the book's table of contents instead of earning the reader's continued attention. The diagonal section restates the chapter's thesis without extending it: the claim that the diagonal is 'special' is prepared by sections 1 and 2 but then announced rather than demonstrated through a new angle.",
+      "strengths": [
+        "'Paper does not know theorems, of course. Paper knows tension.' — this line performs the chapter's thesis in miniature and is its best sentence.",
+        "The Kawasaki theorem explanation ('In plain language: the mountains and valleys around any point have to balance') translates mathematical content for a non-specialist reader without condescending."
+      ],
+      "priorities": [
+        "Develop one engineering application in depth (e.g., the heart stent) instead of listing three superficially — show how Kawasaki's theorem or curvature distribution appears in the actual design process.",
+        "Cut or transform 'What comes next' into a closing image or question that creates forward momentum, not a preview synopsis.",
+        "Add sensory texture to the 'Try this' diagonal experiment: what does the paper feel like under the fold? What resistance does the reader notice? Terse does not mean purely abstract."
+      ]
+    },
+    {
+      "file": "cap_02.md",
+      "title": "Chapter 2 — From Crane to Crease Pattern",
+      "word_count": 565,
+      "is_divider": false,
+      "scores": {
+        "relevance_currency": 5.5,
+        "originality": 5.0,
+        "prose_quality": 5.5,
+        "balance": 5.5,
+        "accessibility": 6.5,
+        "commercial_value": 5.5,
+        "accuracy_references": 6.5
+      },
+      "composite": 5.75,
+      "critique": "The sheet music analogy ('A crease pattern is to origami what sheet music is to a symphony') is among the most overused analogies in writing about notation systems; it appears in books about programming languages, chess theory, and music notation itself and does no original work here. The recipe-book and sheet-music analogies appear in consecutive paragraphs, creating an analogy pile-on that reads as lazy scaffolding. The historical section names Shinto rituals, noshi, and noshikuchi without grounding any of them — the reader is told folding was 'a form of attention' but given no sensory or cultural content to make that claim land.",
+      "strengths": [
+        "The specific examples from Robert Lang — stag beetle, violinist, octopus — are well-chosen and concrete; they make the abstract claim about crease patterns credible rather than merely asserted.",
+        "The 'secret of classical origami' reveal (every famous model is built on a small set of bases) has genuine pacing and a real 'aha' structure."
+      ],
+      "priorities": [
+        "Replace the sheet music analogy with an analogy native to this chapter's argument — something that captures the relationship between a compressed notation and a physical artifact in a way that surprises.",
+        "Give one historical use (the senbazuru, the noshi gift tradition) a concrete sensory description — what the recipient saw, what the folding cost in time, what the gesture communicated — so 'a form of attention' becomes visible rather than declared.",
+        "Bridge the historical section to the crease pattern section explicitly: how does a craft transmitted through family mimicry for centuries generate one of the most rigorous notational systems in all craft practice? That question is the chapter's buried argument."
+      ]
+    },
+    {
+      "file": "cap_03.md",
+      "title": "Chapter 3 — Why the Diagonal Matters",
+      "word_count": 575,
+      "is_divider": false,
+      "scores": {
+        "relevance_currency": 5.5,
+        "originality": 6.5,
+        "prose_quality": 7.0,
+        "balance": 6.5,
+        "accessibility": 7.5,
+        "commercial_value": 6.5,
+        "accuracy_references": 6.5
+      },
+      "composite": 6.62,
+      "critique": "The 'Looking back' closing is a summary recap, not a close — four sentences reviewing what was just read deflates rather than clinches, and reads like a pedagogy workbook. The section on what changes when origami artists leave the diagonal is the most interesting passage in the manuscript but receives the least space; the contemporary practice it describes deserves at least double the length. The hands-on experiment ('Take a square. Any square.') repeats the same instruction from Chapter 1's 'Try this' passage almost verbatim; a reader going through the book will register it as a filler move.",
+      "strengths": [
+        "The chapter's opening — identifying expertise by watching which way someone folds a square — is the strongest hook in the book: specific, visual, immediately testable, and implicitly flattering to the reader who wants to be the experienced one.",
+        "'The lesson is not that the diagonal is always right. The lesson is that the diagonal is the default, and a default is something you depart from only after you have understood it.' — the book's best aphorism, earned rather than asserted."
+      ],
+      "priorities": [
+        "Expand 'What changes when you stop using the diagonal' by at least 50%: name a contemporary artist (Éric Joisel, Giang Dinh, or another), describe a specific model, and show what the resulting crease pattern looks like compared to a classical one.",
+        "Rewrite 'Looking back' as a proper narrative close that creates anticipation for what follows — a question, an image, a provocation — rather than a bullet-point summary of chapters already read.",
+        "Differentiate the Chapter 3 experiment from Chapter 1's by adding new observational content: have the reader compare not just the crease lengths but the triangular shapes produced and connect that observation to the bases introduced in Chapter 2."
+      ]
+    }
+  ],
+  "global": {
+    "scores": {
+      "relevance_currency": 5.5,
+      "originality": 5.5,
+      "prose_quality": 6.33,
+      "balance": 6.0,
+      "accessibility": 7.17,
+      "commercial_value": 5.67,
+      "accuracy_references": 6.33
+    },
+    "composite": 6.13,
+    "top_issues": [
+      "Every chapter ends with a structural transition section ('What comes next,' 'A bridge to the next chapter,' 'Looking back') that replaces narrative momentum with pedagogical placeholding. These sections announce rather than earn, and in a terse, aphoristic voice they read as a draft outline that was never removed.",
+      "No chapter deploys a genuinely fresh analogy. The sheet music, recipe book, and mise en place comparisons are genre clichés for writing about systems and notation. The voice is competent and occasionally strong, but not yet distinctive enough to differentiate this manuscript from the mid-tier craft-popularization shelf — the reader feels oriented but not surprised.",
+      "References and verifiable sourcing are absent throughout. Kawasaki is named (with year) and Lang is named, but the engineering applications (airbags, stents, solar panels), the historical dates, and the mathematical claims are unsourced. For a non-fiction reader who wants to go deeper, this is a structural limitation, not a minor omission."
+    ],
+    "priority_chapters": [
+      "cap_02.md",
+      "cap_01.md",
+      "cap_03.md"
+    ]
+  }
+}

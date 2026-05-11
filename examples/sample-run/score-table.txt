@@ -1,0 +1,33 @@
+
+═══════════════════════════════════
+ prose_loop v1.2.0
+═══════════════════════════════════
+
+! Working tree has uncommitted changes. Consider committing first.
+▸ Rubric: default.json (7 dims, total weight 7.7)
+▸ Chapters directory: chapters/
+▸ Language: en
+▸ Found 3 .md files in chapters/
+▸ Max cycles: 5 | Model: sonnet | Delta: 0.2
+▸ Mode: DRY RUN (evaluate only)
+
+✓ Baseline tagged: prose_baseline_20260511_142913
+▸ Evaluating (cycle 0)...
+✓ Composite score: 6.13
+
+═══════════════════════════════════════════════════════════════════════════
+ Prose Loop — Score Evolution
+═══════════════════════════════════════════════════════════════════════════
+ Cycle   Composite Relev   Orig    Prose   Bal     Acess   Comm    Acc    
+──────────────────────────────────────────────────────────────────────────
+ 0       6.13    5.5     5.5     6.3     6.0     7.2     5.7     6.3    
+═══════════════════════════════════════════════════════════════════════════
+
+ Per-chapter scores (latest evaluation):
+───────────────────────────────────────────────────────────────────────────
+  cap_02.md                     5.75 █████░░░░░ ◄
+  cap_01.md                     6.01 ██████░░░░ ◄
+  cap_03.md                     6.62 ██████░░░░ ◄
+  ◄ = priority for next rewrite | BETTER/SAME/WORSE = last comparison
+═══════════════════════════════════════════════════════════════════════════
+✓ Dry run complete.
