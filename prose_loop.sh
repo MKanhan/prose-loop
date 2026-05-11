@@ -21,6 +21,8 @@ MODEL="opus"
 DELTA_MIN="0.2"
 DRY_RUN=false
 RUBRIC_PATH=""
+CHAPTER_FILTER=()
+PRIORITY_COUNT=3
 
 # Derived at runtime
 PROJECT_DIR="$PWD"
@@ -53,6 +55,9 @@ ${BOLD}Usage:${NC} prose_loop.sh [options]
 ${BOLD}Options:${NC}
   --max-cycles N      Max improvement cycles (default: $MAX_CYCLES)
   --chapters-dir DIR  Chapter directory (default: auto-detect)
+  --chapter FILE      Target specific chapter(s). Repeatable; also
+                      accepts comma-separated list. Default: all .md.
+  --priority-count N  Chapters to rewrite per cycle (default: $PRIORITY_COUNT)
   --model MODEL       Claude model (default: $MODEL)
   --delta FLOAT       Min score improvement to keep (default: $DELTA_MIN)
   --rubric PATH       Scoring rubric JSON (default: rubrics/default.json)
@@ -73,6 +78,14 @@ parse_args() {
     case "$1" in
       --max-cycles)  MAX_CYCLES="$2"; shift 2 ;;
       --chapters-dir) CHAPTERS_DIR="$2"; shift 2 ;;
+      --chapter)
+        local items
+        IFS=',' read -ra items <<< "$2"
+        for item in "${items[@]}"; do
+          CHAPTER_FILTER+=("$item")
+        done
+        shift 2 ;;
+      --priority-count) PRIORITY_COUNT="$2"; shift 2 ;;
       --model)       MODEL="$2"; shift 2 ;;
       --delta)       DELTA_MIN="$2"; shift 2 ;;
       --rubric)      RUBRIC_PATH="$2"; shift 2 ;;
@@ -154,7 +167,18 @@ detect_chapters_dir() {
 }
 
 list_chapter_files() {
-  find "$PROJECT_DIR/$CHAPTERS_DIR" -maxdepth 1 -name '*.md' | sort
+  if [[ ${#CHAPTER_FILTER[@]} -eq 0 ]]; then
+    find "$PROJECT_DIR/$CHAPTERS_DIR" -maxdepth 1 -name '*.md' | sort
+  else
+    for f in "${CHAPTER_FILTER[@]}"; do
+      local path="$PROJECT_DIR/$CHAPTERS_DIR/$f"
+      if [[ ! -f "$path" ]]; then
+        err "Chapter file not found: $f (looked in $CHAPTERS_DIR/)"
+        exit 1
+      fi
+      echo "$path"
+    done | sort
+  fi
 }
 
 # ─── Book context ────────────────────────────────────────
@@ -312,10 +336,14 @@ log_entry() {
 
 build_eval_prompt() {
   local cycle="$1"
-  python3 - "$RUBRIC_PATH" "$cycle" "$BOOK_LANG" "$BOOK_VISION" "$BOOK_GUIDELINES" "$CHAPTERS_DIR" <<'PYEOF'
+  local filter_csv=""
+  if [[ ${#CHAPTER_FILTER[@]} -gt 0 ]]; then
+    filter_csv=$(IFS=,; echo "${CHAPTER_FILTER[*]}")
+  fi
+  python3 - "$RUBRIC_PATH" "$cycle" "$BOOK_LANG" "$BOOK_VISION" "$BOOK_GUIDELINES" "$CHAPTERS_DIR" "$PRIORITY_COUNT" "$filter_csv" <<'PYEOF'
 import json, sys
 
-rubric_path, cycle, book_lang, book_vision, book_guidelines, chapters_dir = sys.argv[1:]
+rubric_path, cycle, book_lang, book_vision, book_guidelines, chapters_dir, priority_count, filter_csv = sys.argv[1:]
 r = json.load(open(rubric_path))
 dims = r['dimensions']
 total = sum(d['weight'] for d in dims)
@@ -328,6 +356,12 @@ formula_terms = " + ".join(f"{d['key']}*{d['weight']}" for d in dims)
 scores_lines = ",\n".join(f'        "{d["key"]}": 0.0' for d in dims)
 global_scores_lines = ",\n".join(f'      "{d["key"]}": 0.0' for d in dims)
 
+if filter_csv:
+    targets = [f.strip() for f in filter_csv.split(',') if f.strip()]
+    target_clause = "Score ONLY these specific files (do not look at any others): " + ", ".join(targets)
+else:
+    target_clause = f"Use the Glob tool to list all .md files in {chapters_dir}/, then Read EVERY .md file found."
+
 print(f"""You are a senior literary critic and book editor evaluating a manuscript.
 You are RIGOROUS and HONEST — never generous. A score of 7 means "good, publishable with revisions." A score of 9 means "exceptional, competitive with bestsellers in this category." Most non-fiction manuscripts score 5-7.
 
@@ -337,8 +371,8 @@ Vision: {book_vision}
 Guidelines: {book_guidelines}
 
 TASK:
-1. Use the Glob tool to list all .md files in {chapters_dir}/
-2. Use the Read tool to read EVERY .md file found
+1. {target_clause}
+2. Use the Read tool to read each chapter in full.
 3. Identify which files are actual chapters vs. structural dividers (part pages, front matter — typically very short files <200 words with only headings/epigraphs). Score ONLY actual chapters.
 4. For each chapter, score on these {len(dims)} dimensions (1.0-10.0 scale, use decimals):
 
@@ -354,7 +388,7 @@ TASK:
    - 1-2 key strengths
    - 2-3 priority improvements (concrete actions)
 
-8. Identify the 3-4 chapters with LOWEST composite scores as priority_chapters.
+8. Identify the {priority_count} chapters with LOWEST composite scores as priority_chapters (if fewer chapters were scored, list all of them).
 
 9. List the top 3 global issues affecting the whole book.
 

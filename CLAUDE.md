@@ -26,6 +26,8 @@ bash ~/path/to/prose-loop/prose_loop.sh --max-cycles 5
 |---|---|---|
 | `--max-cycles N` | 5 | Maximum improvement cycles |
 | `--chapters-dir DIR` | auto | Chapter directory (`capitulos/` or `chapters/`) |
+| `--chapter FILE` | all | Target specific chapter(s). Repeatable or comma-separated |
+| `--priority-count N` | 3 | Chapters to rewrite per cycle |
 | `--model MODEL` | opus | Claude model for evaluation and rewriting |
 | `--delta FLOAT` | 0.3 | Minimum score improvement to keep changes |
 | `--rubric PATH` | rubrics/default.json | Scoring rubric JSON (see rubrics/README.md) |
