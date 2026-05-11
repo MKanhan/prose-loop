@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Lint shell scripts
+        run: shellcheck prose_loop.sh scripts/audit-scan.sh
+
+      - name: Audit scanner self-test
+        run: bash scripts/audit-scan.sh --self-test
+
+      - name: Audit scan (no PII / private refs)
+        run: bash scripts/audit-scan.sh
+
+      - name: Rubric JSON validity
+        run: python3 -m json.tool rubrics/default.json > /dev/null
+
+      - name: prose_loop.sh --help dispatches
+        run: bash prose_loop.sh --help | grep -qE '(--rubric|--chapter|--priority-count)'

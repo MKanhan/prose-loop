@@ -206,7 +206,8 @@ setup_scores_dir() {
 }
 
 create_baseline_tag() {
-  local tag="prose_baseline_$(date +%Y%m%d_%H%M%S)"
+  local tag
+  tag="prose_baseline_$(date +%Y%m%d_%H%M%S)"
   git tag "$tag" 2>/dev/null || true
   ok "Baseline tagged: $tag"
 }
@@ -693,6 +694,7 @@ PYEOF
 
   # Per-chapter scores for latest cycle
   local latest=""
+  # shellcheck disable=SC2012  # ls -t sorts by mtime; filenames are controlled
   latest=$(ls -t "$SCORES_DIR"/cycle_*_eval.json 2>/dev/null | head -1 || true)
   if [[ -n "$latest" ]]; then
     echo ""
@@ -701,6 +703,7 @@ PYEOF
 
     # Find latest comparison file for verdict annotations
     local latest_cmp=""
+    # shellcheck disable=SC2012  # ls -t sorts by mtime; filenames are controlled
     latest_cmp=$(ls -t "$SCORES_DIR"/cycle_*_compare.json 2>/dev/null | head -1 || true)
 
     python3 - "$latest" "${latest_cmp:-}" <<'PYEOF'
@@ -750,14 +753,14 @@ cleanup_on_exit() {
 
 run_loop() {
   local cycle=0 errors=0
-  local prev_composite new_composite
+  local new_composite
 
   # Setup
   create_baseline_tag
   setup_scores_dir
 
   # Baseline evaluation
-  prev_composite=$(run_evaluator 0) || {
+  run_evaluator 0 > /dev/null || {
     err "Baseline evaluation failed."
     exit 1
   }
@@ -832,7 +835,6 @@ run_loop() {
       git add "$CHAPTERS_DIR/" "$SCORES_DIR/"
       git commit -m "prose_loop(cycle$cycle): accepted ($better BETTER, $same SAME, $worse WORSE) | global $new_composite"
       log_entry "cycle=$cycle | type=commit | verdict=$verdict | better=$better | same=$same | worse=$worse | global=$new_composite"
-      prev_composite="$new_composite"
       prev_eval_cycle=$cycle
     else
       warn "Rewrite rejected by comparator ($better BETTER, $same SAME, $worse WORSE)"
