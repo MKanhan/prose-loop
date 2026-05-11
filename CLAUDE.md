@@ -62,7 +62,7 @@ Creates `prose_scores/` in the book project with:
 | Commercial value | 1.0 | `commercial_value` |
 | Accuracy & references | 1.2 | `accuracy_references` |
 
-Composite = sum(score × weight) / sum(weights). Default total weight: 7.7. Override via `--rubric` — see `rubrics/README.md` for schema and shipped alternatives (incl. `pt-br-nonfiction.json` to preserve v1.1.0 numerical compat).
+Composite = sum(score × weight) / sum(weights). Default total weight: 7.7. Keys are stable EN identifiers; critique text is auto-localized to the book's `lang:` from its `CLAUDE.md`. Override the rubric via `--rubric PATH` — see `rubrics/README.md` for schema.
 
 ## Roadmap
 

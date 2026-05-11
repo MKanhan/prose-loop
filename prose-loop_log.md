@@ -52,7 +52,7 @@ Não há gasto Anthropic significativo nas specs 01, 02. Specs 03, 04 envolvem t
 ## Known issues / Tech debt
 
 ### v1.1.0 → v1.2.0 break
-Spec 03 muda chaves de PT-BR para EN no default rubric. JSONs em `prose_scores/` de runs antigos ficarão ilegíveis pelo novo `print_score_table`. Aceitável — documentado no CHANGELOG (Spec 05). Operador que quiser preservar rodadas antigas roda `--rubric rubrics/pt-br-nonfiction.json`.
+Spec 03 muda chaves de PT-BR para EN no default rubric. JSONs em `prose_scores/` de runs antigos ficarão ilegíveis pelo novo `print_score_table`. Aceitável — output JSON é debug por-run, não artefato persistente; basta rodar de novo.
 
 ### Operador é o único usuário até Spec 06
 Até o push público, sem feedback externo. Pode ser que a rubrica EN escolhida em Spec 03 não ressoe com gêneros que o operador não usa (poesia, romance literário). Mitigação: o próprio mecanismo `--rubric` permite override; fica para PRs externos refinarem.

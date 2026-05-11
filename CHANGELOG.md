@@ -6,8 +6,7 @@ All notable changes to this project are documented here. Format loosely follows 
 
 ### Added
 - `--rubric PATH` flag for external scoring rubric JSONs.
-- `rubrics/default.json` — 7 EN-keyed dimensions, weight total 7.7 (matches v1.1.0).
-- `rubrics/pt-br-nonfiction.json` — drop-in replacement for v1.1.0 behavior (identical weights, PT-BR keys/labels).
+- `rubrics/default.json` — 7 EN-keyed dimensions, weight total 7.7.
 - `rubrics/README.md` — schema doc and instructions for custom rubrics.
 - `--chapter FILE` flag, repeatable or comma-separated, to target specific chapters without moving files.
 - `--priority-count N` flag to tune how many chapters get rewritten per cycle (default 3).
@@ -17,8 +16,8 @@ All notable changes to this project are documented here. Format loosely follows 
 - `examples/sample-run/` — reference output (JSON + score table) from running prose-loop on the bundled fixture.
 
 ### Changed
-- **Breaking.** Default scoring dimension keys flip from PT-BR (`relevancia_atualidade`, `qualidade_prosa`, …) to EN (`relevance_currency`, `prose_quality`, …). Old `prose_scores/cycle_*_eval.json` files will not render in the new score table. Pass `--rubric rubrics/pt-br-nonfiction.json` to preserve the v1.1.0 keys and numerics.
-- Composite divisor is now `sum(weights)` instead of hardcoded `7.7`. Behavior identical when weights sum to 7.7 (true for both shipped rubrics). Custom rubrics with different weight totals now produce composites that remain in [1, 10].
+- Scoring dimension keys are now stable EN identifiers (`relevance_currency`, `prose_quality`, …) regardless of book language. The *critique text* the evaluator writes is localized to the book's language, picked up from `lang:` in the book project's `CLAUDE.md`. This separates the machine-readable schema (EN) from the human-readable output (book language).
+- Composite divisor is now `sum(weights)` instead of hardcoded `7.7`. Behavior identical when weights sum to 7.7 (true for the default rubric). Custom rubrics with different weight totals now produce composites that remain in [1, 10].
 - Eval / rewrite / comparator prompts now construct their dimension list from the active rubric instead of hardcoding it. Same for the score table header.
 - VERSION bumped 1.1.0 → 1.2.0.
 

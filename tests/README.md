@@ -34,17 +34,6 @@ cat prose_scores/cycle_0_eval.json | python3 -m json.tool | head -30
 
 Expected: 3 chapter entries with EN keys (`prose_quality`, `accessibility`, etc.), composite in [1, 10].
 
-### Smoke test: PT-BR rubric (preserves v1.1.0 behavior)
-
-```bash
-cd tests/fixtures/mini-book
-rm -rf prose_scores/
-bash ../../../prose_loop.sh --dry-run --model sonnet --rubric ../../../rubrics/pt-br-nonfiction.json
-cat prose_scores/cycle_0_eval.json | python3 -m json.tool | head -30
-```
-
-Expected: PT-BR keys (`qualidade_prosa`, `acessibilidade`, etc.). Composites should be within ~±0.5 of the default-rubric run on the same content.
-
 ### Smoke test: targeted chapter
 
 ```bash

@@ -35,10 +35,11 @@ A rubric is a JSON file defining the scoring dimensions, weights, and per-dimens
 
 `composite = sum(score_i * weight_i) / sum(weight_i)`. Always in [1, 10]. Two rubrics with the same weight totals produce numerically comparable composites.
 
-## Shipped rubrics
+## Shipped rubric
 
 - `default.json` — 7 dimensions, English keys, tuned for commercial nonfiction. Weight sum 7.7.
-- `pt-br-nonfiction.json` — same 7 dimensions in pt-BR. Same weights. Use to preserve numerical comparability with prose-loop v1.1.0 runs.
+
+The keys are stable EN identifiers regardless of your book's language. The *critique text* the evaluator writes inside the JSON is localized to the book's language (auto-detected from `lang:` in the book project's `CLAUDE.md`).
 
 ## Writing a custom rubric
 

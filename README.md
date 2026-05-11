@@ -81,7 +81,7 @@ Common flags (see `--help` for the full list):
 
 The default rubric (7 dimensions, weights summing to 7.7) is tuned for commercial nonfiction. To use a different one — or to write your own — see [`rubrics/README.md`](rubrics/README.md).
 
-A `pt-br-nonfiction.json` is shipped for users coming from prose-loop v1.1.0 who want to preserve numerically comparable composites.
+The rubric keys are EN identifiers regardless of book language. The critique text the evaluator writes is auto-localized: it picks up `lang:` from your book project's `CLAUDE.md` and responds in that language. You don't need a localized rubric — write your book in any language, get critique in that same language.
 
 ## Privacy
 
