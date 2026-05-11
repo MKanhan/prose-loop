@@ -38,7 +38,7 @@ ADRs, design rationale, deferred backlog, known issues, handoff. Sprint history 
 - Re-audit final sobre repo completo.
 - Renomear `## [Unreleased]` no CHANGELOG para `## [1.2.0] - 2026-05-DD`.
 - Criar repo público em github.com/<handle>/prose-loop, push main, push tag v1.2.0.
-- Adicionar entry em kanhan.com.br/en/build/.
+- Adicionar entry em kanhan.com.br/en/build/. <!-- audit:allow operator portfolio site -->
 
 ### Ordem de execução das specs
 01 ✅ → 02 ✅ → 03 ✅ → 04 ✅ → 05 ✅ → **06 (final)**.
