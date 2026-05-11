@@ -1,6 +1,8 @@
 # prose-loop — Log
 
-ADRs, design rationale, deferred backlog, known issues, handoff. Sprint history (uma vez que git existir) fica em git log.
+**Shipped 2026-05-11 — v1.2.0 public at https://github.com/MKanhan/prose-loop.** Listed em https://kanhan.com.br/en/build/. <!-- audit:allow operator portfolio site -->
+
+ADRs, design rationale, deferred backlog, known issues. Sprint history fica em git log.
 
 ## Architecture decisions (ADRs)
 

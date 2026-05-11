@@ -3,7 +3,9 @@
 ## Meta
 type: software
 lang: en
-status: active (open-source publication push)
+status: shipped
+public: https://github.com/MKanhan/prose-loop
+version: 1.2.0 (released 2026-05-11)
 
 ## Vision
 Iterative prose improvement loop for books. Inspired by agent loops from code (autoresearch-style), applied to prose: evaluate → critique → rewrite → re-evaluate → keep or discard. Uses the Claude CLI as the engine, git for safety, and structured scoring for objectivity.
@@ -66,22 +68,20 @@ Composite = sum(score × weight) / sum(weights). Default total weight: 7.7. Keys
 
 ## Roadmap
 
-Sprint-driven via specs em `.local/specs/` (não-tracked — planejamento interno). Ordem obrigatória: 01 é gate (nada vai público sem auditoria). 02 depende de 01. 03 e 04 podem ser paralelos. 05 depende de 03 e 04. 06 fecha.
-
-### Planned
-- Spec: `.local/specs/01_security_audit_redaction.md` — PII scan + redaction; gate para tudo abaixo.
-- Spec: `.local/specs/02_repo_bootstrap.md` — git init, LICENSE (MIT), .gitignore, commit inicial.
-- Spec: `.local/specs/03_rubric_externalization.md` — EN keys como default + `--rubric` flag (cobre roadmap antigo 1.4 e 1.6).
-- Spec: `.local/specs/04_targeted_operations.md` — `--chapter` e `--priority-count` (cobre 1.3 e 1.5).
-- Spec: `.local/specs/05_docs_examples.md` — README público, `examples/`, CHANGELOG, seções Privacy/Cost (cobre 1.2 e 2.2).
-- Spec: `.local/specs/06_ci_publication.md` — shellcheck, GitHub Action, push público, tag v1.2.0, entry em kanhan.com.br/en/build/ (cobre 2.1, 2.3, 2.4). <!-- audit:allow operator portfolio site -->
+Sprint de open-source publication concluída em 2026-05-11 (v1.2.0). Specs locais em `.local/specs/` (não-tracked — planejamento interno).
 
 ### Done
-_(none yet — open-source publication push iniciado em 2026-05-11)_
+- Spec 01 — PII audit + scanner (`scripts/audit-scan.sh`).
+- Spec 02 — git init, MIT LICENSE, .gitignore.
+- Spec 03 — Rubric externalization (EN default, `--rubric` flag).
+- Spec 04 — `--chapter`, `--priority-count`.
+- Spec 05 — README, CHANGELOG, examples/sample-run/.
+- Spec 06 — shellcheck-clean, CI, tag v1.2.0, push to github.com/MKanhan/prose-loop, release, entry em kanhan.com.br/en/build/. <!-- audit:allow operator portfolio site -->
 
-### Deferred (pós-v1.2.0)
+### Backlog (post-v1.2.0; pull when demand surfaces)
 - Model routing (Sonnet para eval, Opus para rewrite) — cost optimization.
 - HTML report generation a partir dos JSONs em `prose_scores/`.
 - Asciinema cast para `examples/`.
 - Multi-OS matrix no CI (macOS + Linux).
 - Pacote homebrew / asdf — só se demanda externa aparecer.
+- Dependabot, branch protection.
