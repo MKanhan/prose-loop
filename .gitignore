@@ -1,0 +1,24 @@
+# Output of prose_loop.sh runs — contains user's book content
+prose_scores/
+
+# Internal planning artifacts (specs, AUDIT.md, raw reports)
+.local/
+
+# Defensive: specs live in .local/specs/, never at repo root
+specs/
+
+# Logs
+*.log
+
+# OS / editor noise
+.DS_Store
+*.tmp
+*.swp
+*.swo
+
+# Python
+__pycache__/
+.venv/
+
+# Claude Code local settings
+.claude/
