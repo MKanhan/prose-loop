@@ -14,37 +14,34 @@ ADRs, design rationale, deferred backlog, known issues, handoff. Sprint history 
 | 0006 | (Spec 01, planned) Auditoria de PII como gate antes de `git init` | Confiar em revisão visual | Risco de leak não vale 1h de scan determinístico |
 | 0007 | `specs/` vivem em `.local/specs/`, não tracked | Publicar specs sanitizadas no repo | Specs eram fonte de 18/23 hits PII e exigiriam edição contínua; mover elimina superfície sem perder a metodologia spec-driven internamente. Decidido durante implementação da Spec 01 |
 
-## Handoff — 2026-05-11 (Specs 01-04 done; v1.2.0-eligible)
+## Handoff — 2026-05-11 (Specs 01-05 done; ready for Spec 06)
 
 ### Estado atual
-**Status: active**. Repo git, branch `main`, 5 commits, working tree clean, ~16 arquivos tracked.
+**Status: active**. Repo git, branch `main`, 8 commits, working tree clean, ~20 arquivos tracked.
 
-- Specs 01-04 implementadas. VERSION bumped 1.1.0 → 1.2.0.
-- 2 rubricas shipped: `rubrics/default.json` (EN, default), `rubrics/pt-br-nonfiction.json` (preserva v1.1.0).
-- Composite divisor agora dinâmico = `sum(weights)` (não hardcoded 7.7).
-- Fixture sintético em `tests/fixtures/mini-book/` (3 capítulos sobre origami, ~600 palavras cada, EN). `tests/README.md` documenta smoke tests.
-- Novos flags: `--rubric`, `--chapter`, `--priority-count`.
-- audit-scan.sh continua mode 100644 (sandbox bloqueia chmod +x); invocação `bash scripts/audit-scan.sh`. <!-- audit:allow operator portfolio site --> URL canônica `kanhan.com.br/en/build/`.
+- Specs 01-05 implementadas.
+- README.md, CHANGELOG.md, examples/sample-run/ publicados (Spec 05).
+- Bug latente encontrado e corrigido durante Spec 05: `print_score_table` abortava silenciosamente sob `set -eo pipefail` quando `cycle_*_compare.json` ainda não existia (commit a06154d). CHANGELOG documenta. <!-- audit:allow operator portfolio site --> URL canônica kanhan.com.br + substack.kanhan.com.
+- audit-scan.sh continua mode 100644 (sandbox bloqueia chmod +x); invocação `bash scripts/audit-scan.sh`.
 
 ### Verificação executada
-- Self-test: passa.
+- Self-test scanner: passa.
 - Audit scan: exit 0.
-- Default rubric on fixture: composite 6.72, chaves EN.
-- PT-BR rubric on fixture: composite 6.30, chaves PT-BR. Diff 0.42 (dentro da margem ±0.5).
-- `--chapter cap_01.md`: JSON com 1 chapter entry.
-- `--priority-count 1`: priority list de 1, todos 3 capítulos avaliados.
-- `--chapter nonexistent.md`: exit 1 com mensagem clara.
-- `--rubric nonexistent.json`: exit 2 com mensagem clara.
+- Dry-run sobre fixture mini-book (Sonnet): composite 6.13, score table completa com per-chapter rows + markers ◄.
+- examples/sample-run/cycle_0_eval.json e score-table.txt criados a partir desse run.
+- README cold-read: responde what / how / cost / privacy / license em <2min.
 
 ### Próxima ação
-**Spec 05 — Docs & examples**. Depende de 03+04 (✅ done).
-- README.md público com seções What/How/Install/Quick-start/Privacy/Cost/Limitations/License.
-- `examples/` com 1 run sanitizado sobre o fixture mini-book (cycle_0_eval.json + screenshot da score table).
-- CHANGELOG.md documentando break v1.1.0 → v1.2.0.
-- Cost section deve mencionar Sonnet como alternativa barata (`--model sonnet`).
+**Spec 06 — CI & publication**. Última sprint.
+- Shellcheck sobre prose_loop.sh + scripts/audit-scan.sh; aplicar fixes ou disable-comments justificados.
+- `.github/workflows/ci.yml` mínima: checkout + install shellcheck + `shellcheck *.sh` + `PROSE_LOOP_CI=1` smoke test (precisa adicionar early-exit em prose_loop.sh).
+- Re-audit final sobre repo completo.
+- Renomear `## [Unreleased]` no CHANGELOG para `## [1.2.0] - 2026-05-DD`.
+- Criar repo público em github.com/<handle>/prose-loop, push main, push tag v1.2.0.
+- Adicionar entry em kanhan.com.br/en/build/.
 
 ### Ordem de execução das specs
-01 ✅ → 02 ✅ → 03 ✅ → 04 ✅ → **05 (next)** → 06.
+01 ✅ → 02 ✅ → 03 ✅ → 04 ✅ → 05 ✅ → **06 (final)**.
 
 ### Materialidade pra portfolio-state.md
 Status do projeto mudou de `paused` para `active`. Operador pode querer atualizar `portfolio-state.md` quando o ciclo encerrar (Spec 06 done + repo público).
