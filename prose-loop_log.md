@@ -14,27 +14,37 @@ ADRs, design rationale, deferred backlog, known issues, handoff. Sprint history 
 | 0006 | (Spec 01, planned) Auditoria de PII como gate antes de `git init` | Confiar em revisão visual | Risco de leak não vale 1h de scan determinístico |
 | 0007 | `specs/` vivem em `.local/specs/`, não tracked | Publicar specs sanitizadas no repo | Specs eram fonte de 18/23 hits PII e exigiriam edição contínua; mover elimina superfície sem perder a metodologia spec-driven internamente. Decidido durante implementação da Spec 01 |
 
-## Handoff — 2026-05-11 (Spec 01 + Spec 02 done)
+## Handoff — 2026-05-11 (Specs 01-04 done; v1.2.0-eligible)
 
 ### Estado atual
-v1.1.0 funcional, validado em uso real. **Status: active**. Repo git inicializado, branch `main`, 2 commits, working tree clean, 7 arquivos tracked.
+**Status: active**. Repo git, branch `main`, 5 commits, working tree clean, ~16 arquivos tracked.
 
-- Specs 01 + 02 implementadas.
-- `.local/AUDIT.md` signed off (2026-05-11).
-- Scanner skip-list inclui LICENSE-class files após false positive no copyright holder (fix em commit 1504aa8).
-- audit-scan.sh tem mode 100644 (não +x). Invocação canônica: `bash scripts/audit-scan.sh`. Sandbox bloqueou `chmod +x`.
-- URL canônica do portfólio do operador: `kanhan.com.br/en/build/` (corrigida — antes estava como /apps). <!-- audit:allow operator portfolio site -->
+- Specs 01-04 implementadas. VERSION bumped 1.1.0 → 1.2.0.
+- 2 rubricas shipped: `rubrics/default.json` (EN, default), `rubrics/pt-br-nonfiction.json` (preserva v1.1.0).
+- Composite divisor agora dinâmico = `sum(weights)` (não hardcoded 7.7).
+- Fixture sintético em `tests/fixtures/mini-book/` (3 capítulos sobre origami, ~600 palavras cada, EN). `tests/README.md` documenta smoke tests.
+- Novos flags: `--rubric`, `--chapter`, `--priority-count`.
+- audit-scan.sh continua mode 100644 (sandbox bloqueia chmod +x); invocação `bash scripts/audit-scan.sh`. <!-- audit:allow operator portfolio site --> URL canônica `kanhan.com.br/en/build/`.
+
+### Verificação executada
+- Self-test: passa.
+- Audit scan: exit 0.
+- Default rubric on fixture: composite 6.72, chaves EN.
+- PT-BR rubric on fixture: composite 6.30, chaves PT-BR. Diff 0.42 (dentro da margem ±0.5).
+- `--chapter cap_01.md`: JSON com 1 chapter entry.
+- `--priority-count 1`: priority list de 1, todos 3 capítulos avaliados.
+- `--chapter nonexistent.md`: exit 1 com mensagem clara.
+- `--rubric nonexistent.json`: exit 2 com mensagem clara.
 
 ### Próxima ação
-**Spec 03 — Rubric externalization** (paralelizável com Spec 04).
-- Criar `rubrics/default.json` (EN keys) e `rubrics/pt-br-nonfiction.json` (preserva atual).
-- Adicionar `--rubric PATH` flag em `prose_loop.sh`.
-- Refator de `build_eval_prompt` + `print_score_table` para iterar sobre dimensões da rubrica.
-- Manter composite divisor 7.7 para compatibilidade numérica.
-- Sanity: composite com `--rubric rubrics/pt-br-nonfiction.json` deve bater (±0.1) com v1.1.0 no mesmo livro.
+**Spec 05 — Docs & examples**. Depende de 03+04 (✅ done).
+- README.md público com seções What/How/Install/Quick-start/Privacy/Cost/Limitations/License.
+- `examples/` com 1 run sanitizado sobre o fixture mini-book (cycle_0_eval.json + screenshot da score table).
+- CHANGELOG.md documentando break v1.1.0 → v1.2.0.
+- Cost section deve mencionar Sonnet como alternativa barata (`--model sonnet`).
 
 ### Ordem de execução das specs
-01 ✅ → 02 ✅ → **03 (next, ‖ com 04)** → 05 → 06.
+01 ✅ → 02 ✅ → 03 ✅ → 04 ✅ → **05 (next)** → 06.
 
 ### Materialidade pra portfolio-state.md
 Status do projeto mudou de `paused` para `active`. Operador pode querer atualizar `portfolio-state.md` quando o ciclo encerrar (Spec 06 done + repo público).
