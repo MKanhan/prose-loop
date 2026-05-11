@@ -84,6 +84,8 @@ PATTERNS = [
     ("private_proj",    re.compile(r"\b(janis|bartleby|agent-lgpd|paper9|autollecto|arena|libri|cultivation)\b", re.IGNORECASE)),
 ]
 ALLOW_MARKER = "audit:allow"
+# Files where author/holder name is expected by convention — skip whole file.
+AUTHOR_FILES = {"LICENSE", "LICENSE.MD", "LICENSE.TXT", "NOTICE", "AUTHORS", "CONTRIBUTORS", "COPYING"}
 
 files_list_path = sys.argv[1]
 repo_root = sys.argv[2]
@@ -95,6 +97,8 @@ total_hits = 0
 by_file = {}
 
 for relpath in files:
+    if os.path.basename(relpath).upper() in AUTHOR_FILES:
+        continue
     abspath = os.path.join(repo_root, relpath)
     try:
         with open(abspath, encoding="utf-8", errors="replace") as fh:
