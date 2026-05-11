@@ -1,0 +1,55 @@
+{
+  "name": "default-nonfiction",
+  "version": 1,
+  "dimensions": [
+    {
+      "key": "relevance_currency",
+      "label": "Relevance & currency",
+      "short": "Relev",
+      "weight": 1.0,
+      "description": "Are claims current? Data fresh? Examples relevant to today's reader?"
+    },
+    {
+      "key": "originality",
+      "label": "Originality of analogies/cases",
+      "short": "Orig",
+      "weight": 1.0,
+      "description": "Are analogies and case studies original, not clichéd? Do they illuminate?"
+    },
+    {
+      "key": "prose_quality",
+      "label": "Prose quality",
+      "short": "Prose",
+      "weight": 1.5,
+      "description": "Rhythm, cadence, flow. Engaging or mechanical? Paragraph cohesion, transitions, sentence variety."
+    },
+    {
+      "key": "balance",
+      "label": "Chapter balance",
+      "short": "Bal",
+      "weight": 0.8,
+      "description": "Length balance across chapters. Repetition of examples across chapters. Internal consistency."
+    },
+    {
+      "key": "accessibility",
+      "label": "Accessibility",
+      "short": "Acess",
+      "weight": 1.2,
+      "description": "Can a non-technical reader follow without condescension? Jargon minimized or explained?"
+    },
+    {
+      "key": "commercial_value",
+      "label": "Commercial value",
+      "short": "Comm",
+      "weight": 1.0,
+      "description": "Would this sell? Hook, compelling titles, engagement, page-turner quality."
+    },
+    {
+      "key": "accuracy_references",
+      "label": "Accuracy & references",
+      "short": "Acc",
+      "weight": 1.2,
+      "description": "References present and properly formatted? Claims verifiable?"
+    }
+  ]
+}

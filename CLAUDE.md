@@ -28,6 +28,7 @@ bash ~/path/to/prose-loop/prose_loop.sh --max-cycles 5
 | `--chapters-dir DIR` | auto | Chapter directory (`capitulos/` or `chapters/`) |
 | `--model MODEL` | opus | Claude model for evaluation and rewriting |
 | `--delta FLOAT` | 0.3 | Minimum score improvement to keep changes |
+| `--rubric PATH` | rubrics/default.json | Scoring rubric JSON (see rubrics/README.md) |
 | `--dry-run` | off | Evaluate only, no rewriting |
 
 ### How it works
@@ -48,16 +49,18 @@ Creates `prose_scores/` in the book project with:
 - `python3` (macOS default)
 - `git` initialized in the book project
 
-## Scoring dimensions
+## Scoring dimensions (default rubric)
 | Dimension | Weight | Key |
 |---|---|---|
-| Relevance & currency | 1.0 | `relevancia_atualidade` |
-| Originality of analogies/cases | 1.0 | `originalidade_analogias` |
-| Prose quality | 1.5 | `qualidade_prosa` |
-| Chapter balance | 0.8 | `equilibrio` |
-| Accessibility | 1.2 | `acessibilidade` |
-| Commercial value | 1.0 | `valor_comercial` |
-| Scientific accuracy & refs | 1.2 | `correcao_referencias` |
+| Relevance & currency | 1.0 | `relevance_currency` |
+| Originality of analogies/cases | 1.0 | `originality` |
+| Prose quality | 1.5 | `prose_quality` |
+| Chapter balance | 0.8 | `balance` |
+| Accessibility | 1.2 | `accessibility` |
+| Commercial value | 1.0 | `commercial_value` |
+| Accuracy & references | 1.2 | `accuracy_references` |
+
+Composite = sum(score × weight) / sum(weights). Default total weight: 7.7. Override via `--rubric` — see `rubrics/README.md` for schema and shipped alternatives (incl. `pt-br-nonfiction.json` to preserve v1.1.0 numerical compat).
 
 ## Roadmap
 

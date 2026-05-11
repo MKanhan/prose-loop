@@ -23,7 +23,7 @@ v1.1.0 funcional, validado em uso real. **Status: active**. Repo git inicializad
 - `.local/AUDIT.md` signed off (2026-05-11).
 - Scanner skip-list inclui LICENSE-class files após false positive no copyright holder (fix em commit 1504aa8).
 - audit-scan.sh tem mode 100644 (não +x). Invocação canônica: `bash scripts/audit-scan.sh`. Sandbox bloqueou `chmod +x`.
-- URL canônica do portfólio do operador: `kanhan.com.br/en/build/` (corrigida — antes estava como /apps).
+- URL canônica do portfólio do operador: `kanhan.com.br/en/build/` (corrigida — antes estava como /apps). <!-- audit:allow operator portfolio site -->
 
 ### Próxima ação
 **Spec 03 — Rubric externalization** (paralelizável com Spec 04).

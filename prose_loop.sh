@@ -10,7 +10,9 @@ unset CLAUDECODE 2>/dev/null || true
 # Project-agnostic.
 # ─────────────────────────────────────────────────────────
 
-VERSION="1.1.0"
+VERSION="1.2.0"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Defaults
 MAX_CYCLES=5
@@ -18,6 +20,7 @@ CHAPTERS_DIR=""
 MODEL="opus"
 DELTA_MIN="0.2"
 DRY_RUN=false
+RUBRIC_PATH=""
 
 # Derived at runtime
 PROJECT_DIR="$PWD"
@@ -52,6 +55,7 @@ ${BOLD}Options:${NC}
   --chapters-dir DIR  Chapter directory (default: auto-detect)
   --model MODEL       Claude model (default: $MODEL)
   --delta FLOAT       Min score improvement to keep (default: $DELTA_MIN)
+  --rubric PATH       Scoring rubric JSON (default: rubrics/default.json)
   --dry-run           Evaluate only, no rewriting
   --help              Show this help
 
@@ -71,11 +75,43 @@ parse_args() {
       --chapters-dir) CHAPTERS_DIR="$2"; shift 2 ;;
       --model)       MODEL="$2"; shift 2 ;;
       --delta)       DELTA_MIN="$2"; shift 2 ;;
+      --rubric)      RUBRIC_PATH="$2"; shift 2 ;;
       --dry-run)     DRY_RUN=true; shift ;;
       --help|-h)     usage ;;
       *) err "Unknown option: $1"; usage ;;
     esac
   done
+}
+
+# ─── Rubric ──────────────────────────────────────────────
+
+resolve_rubric_path() {
+  if [[ -z "$RUBRIC_PATH" ]]; then
+    RUBRIC_PATH="$SCRIPT_DIR/rubrics/default.json"
+  fi
+  if [[ ! -f "$RUBRIC_PATH" ]]; then
+    err "Rubric not found: $RUBRIC_PATH"
+    exit 2
+  fi
+  if ! python3 -c "import json; json.load(open('$RUBRIC_PATH'))" 2>/dev/null; then
+    err "Rubric is not valid JSON: $RUBRIC_PATH"
+    exit 2
+  fi
+  if ! python3 - "$RUBRIC_PATH" <<'PYEOF'
+import json, sys
+r = json.load(open(sys.argv[1]))
+assert 'dimensions' in r and isinstance(r['dimensions'], list) and len(r['dimensions']) >= 1, "missing or empty 'dimensions'"
+required = {'key', 'label', 'short', 'weight', 'description'}
+for d in r['dimensions']:
+    missing = required - d.keys()
+    assert not missing, f"dimension {d.get('key', '?')} missing fields: {missing}"
+    assert isinstance(d['weight'], (int, float)) and d['weight'] > 0, f"dimension {d['key']} has non-positive weight"
+PYEOF
+  then
+    err "Rubric schema invalid: $RUBRIC_PATH"
+    exit 2
+  fi
+  info "Rubric: ${BOLD}$(basename "$RUBRIC_PATH")${NC} ($(python3 -c "import json;r=json.load(open('$RUBRIC_PATH'));print(len(r['dimensions']),'dims, total weight',sum(d['weight'] for d in r['dimensions']))"))"
 }
 
 # ─── Dependency checks ───────────────────────────────────
@@ -276,36 +312,45 @@ log_entry() {
 
 build_eval_prompt() {
   local cycle="$1"
-  cat << EVALEOF
-You are a senior literary critic and book editor evaluating a manuscript.
+  python3 - "$RUBRIC_PATH" "$cycle" "$BOOK_LANG" "$BOOK_VISION" "$BOOK_GUIDELINES" "$CHAPTERS_DIR" <<'PYEOF'
+import json, sys
+
+rubric_path, cycle, book_lang, book_vision, book_guidelines, chapters_dir = sys.argv[1:]
+r = json.load(open(rubric_path))
+dims = r['dimensions']
+total = sum(d['weight'] for d in dims)
+
+dim_lines = "\n".join(
+    f"   - {d['key']} (weight {d['weight']}): {d['description']}"
+    for d in dims
+)
+formula_terms = " + ".join(f"{d['key']}*{d['weight']}" for d in dims)
+scores_lines = ",\n".join(f'        "{d["key"]}": 0.0' for d in dims)
+global_scores_lines = ",\n".join(f'      "{d["key"]}": 0.0' for d in dims)
+
+print(f"""You are a senior literary critic and book editor evaluating a manuscript.
 You are RIGOROUS and HONEST — never generous. A score of 7 means "good, publishable with revisions." A score of 9 means "exceptional, competitive with bestsellers in this category." Most non-fiction manuscripts score 5-7.
 
 BOOK CONTEXT:
-Language: $BOOK_LANG
-Vision: $BOOK_VISION
-Guidelines: $BOOK_GUIDELINES
+Language: {book_lang}
+Vision: {book_vision}
+Guidelines: {book_guidelines}
 
 TASK:
-1. Use the Glob tool to list all .md files in $CHAPTERS_DIR/
+1. Use the Glob tool to list all .md files in {chapters_dir}/
 2. Use the Read tool to read EVERY .md file found
 3. Identify which files are actual chapters vs. structural dividers (part pages, front matter — typically very short files <200 words with only headings/epigraphs). Score ONLY actual chapters.
-4. For each chapter, score on these 7 dimensions (1.0-10.0 scale, use decimals):
+4. For each chapter, score on these {len(dims)} dimensions (1.0-10.0 scale, use decimals):
 
-   - relevancia_atualidade (weight 1.0): Are claims current? Data fresh? Examples relevant?
-   - originalidade_analogias (weight 1.0): Are analogies and case studies original, not clichéd? Do they illuminate?
-   - qualidade_prosa (weight 1.5): Rhythm, cadence, flow. Engaging or mechanical? Paragraph cohesion, transitions, sentence variety.
-   - equilibrio (weight 0.8): Length balance across chapters. Repetition of examples across chapters. Internal consistency.
-   - acessibilidade (weight 1.2): Can a non-technical reader follow without condescension? Jargon minimized or explained?
-   - valor_comercial (weight 1.0): Would this sell? Hook, compelling titles, engagement, page-turner quality.
-   - correcao_referencias (weight 1.2): References present and properly formatted? Claims verifiable?
+{dim_lines}
 
 5. Calculate weighted composite per chapter:
-   composite = (rel*1.0 + orig*1.0 + prosa*1.5 + equil*0.8 + acess*1.2 + valor*1.0 + corr*1.2) / 7.7
+   composite = ({formula_terms}) / {total}
 
 6. Calculate global score as average of chapter composites.
 
 7. For each chapter provide:
-   - 2-3 specific, actionable critique points (not vague praise). Write critique in $BOOK_LANG.
+   - 2-3 specific, actionable critique points (not vague praise). Write critique in {book_lang}.
    - 1-2 key strengths
    - 2-3 priority improvements (concrete actions)
 
@@ -317,48 +362,36 @@ OUTPUT FORMAT — THIS IS CRITICAL:
 Output your evaluation as JSON between these EXACT markers. No markdown code fences inside. Raw JSON only.
 
 EVAL_JSON_START
-{
-  "cycle": $cycle,
+{{
+  "cycle": {cycle},
   "chapters": [
-    {
+    {{
       "file": "filename.md",
       "title": "Chapter title from the heading",
       "word_count": 0,
       "is_divider": false,
-      "scores": {
-        "relevancia_atualidade": 0.0,
-        "originalidade_analogias": 0.0,
-        "qualidade_prosa": 0.0,
-        "equilibrio": 0.0,
-        "acessibilidade": 0.0,
-        "valor_comercial": 0.0,
-        "correcao_referencias": 0.0
-      },
+      "scores": {{
+{scores_lines}
+      }},
       "composite": 0.0,
-      "critique": "Specific actionable critique in $BOOK_LANG",
+      "critique": "Specific actionable critique in {book_lang}",
       "strengths": ["strength 1"],
       "priorities": ["concrete action 1", "concrete action 2"]
-    }
+    }}
   ],
-  "global": {
-    "scores": {
-      "relevancia_atualidade": 0.0,
-      "originalidade_analogias": 0.0,
-      "qualidade_prosa": 0.0,
-      "equilibrio": 0.0,
-      "acessibilidade": 0.0,
-      "valor_comercial": 0.0,
-      "correcao_referencias": 0.0
-    },
+  "global": {{
+    "scores": {{
+{global_scores_lines}
+    }},
     "composite": 0.0,
     "top_issues": ["issue 1", "issue 2", "issue 3"],
     "priority_chapters": ["file1.md", "file2.md", "file3.md"]
-  }
-}
+  }}
+}}
 EVAL_JSON_END
 
-After the markers you may add a brief natural language summary.
-EVALEOF
+After the markers you may add a brief natural language summary.""")
+PYEOF
 }
 
 run_evaluator() {
@@ -599,21 +632,28 @@ print_score_table() {
   echo -e "${BOLD}═══════════════════════════════════════════════════════════════════════════${NC}"
   echo -e "${BOLD} Prose Loop — Score Evolution${NC}"
   echo -e "${BOLD}═══════════════════════════════════════════════════════════════════════════${NC}"
-  printf " %-7s %-10s %-7s %-7s %-7s %-7s %-7s %-7s %-7s\n" \
-    "Cycle" "Composite" "Prosa" "Acess" "Corr" "Orig" "Relev" "Valor" "Equil"
-  echo -e "───────────────────────────────────────────────────────────────────────────"
 
-  for f in "$SCORES_DIR"/cycle_*_eval.json; do
-    [[ -f "$f" ]] || continue
-    python3 << PYEOF - "$f"
-import json, sys
-d = json.load(open(sys.argv[1]))
-g = d['global']
-s = g['scores']
-c = d.get('cycle', '?')
-print(f" {c:<7} {g['composite']:<10.2f} {s['qualidade_prosa']:<7.1f} {s['acessibilidade']:<7.1f} {s['correcao_referencias']:<7.1f} {s['originalidade_analogias']:<7.1f} {s['relevancia_atualidade']:<7.1f} {s['valor_comercial']:<7.1f} {s['equilibrio']:<7.1f}")
+  python3 - "$RUBRIC_PATH" "$SCORES_DIR" <<'PYEOF'
+import json, sys, glob, os
+
+rubric_path, scores_dir = sys.argv[1:]
+r = json.load(open(rubric_path))
+dims = r['dimensions']
+
+header_cols = ["Cycle", "Composite"] + [d['short'] for d in dims]
+header_line = " " + " ".join(f"{c:<7}" for c in header_cols)
+print(header_line)
+print("─" * len(header_line))
+
+cycle_files = sorted(glob.glob(os.path.join(scores_dir, 'cycle_*_eval.json')))
+for f in cycle_files:
+    d = json.load(open(f))
+    g = d['global']
+    s = g.get('scores', {})
+    c = d.get('cycle', '?')
+    row = [f"{c}", f"{g['composite']:.2f}"] + [f"{s.get(dim['key'], 0):.1f}" for dim in dims]
+    print(" " + " ".join(f"{v:<7}" for v in row))
 PYEOF
-  done
 
   echo -e "${BOLD}═══════════════════════════════════════════════════════════════════════════${NC}"
 
@@ -795,6 +835,7 @@ main() {
   echo ""
 
   check_dependencies
+  resolve_rubric_path
   detect_chapters_dir
   detect_book_context
 
